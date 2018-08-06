@@ -1,0 +1,17 @@
+<% include partials/header%>
+<% include partials/navbar%>
+
+<div class="container">
+            <%if(currentUser){%>
+                <input type="text" name="text" placeholder="search">
+                <button  id="search">Submit</button>
+            <%}%>    
+</div>
+
+<div class="container" id="results">
+
+</div>
+
+<% include partials/scripts %>
+<script src="search.js"></script>
+<% include partials/footer %>

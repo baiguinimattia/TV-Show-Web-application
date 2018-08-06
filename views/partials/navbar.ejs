@@ -1,0 +1,35 @@
+<div class="ui menu large stackable borderless inverted">
+
+    <a href="/main" class="item">Home</a>
+    <a href="/search" class="item">Search</a>
+    <div class="right menu">
+          <%if(!currentUser){%>
+            <a href="/login" id="loginButton" class="item">Login</a>
+            <a href="/register" id="registerButton" class="item">Register</a>
+          <%} else {%>  
+            <a class="item">Signed in As:<strong><%=" " + currentUser.username.toUpperCase()%></strong></a>
+            <a href="/logout" id="logoutButton" class="item">Logout</a>
+          <%}%>
+            <!-- <button class="compact ui button inverted black link" href="/login">Login</button>
+            <button class="compact ui button inverted black link" href="/register">SignUp</button>
+            <button class="compact ui button inverted black link" href="/logout">Logout</button> -->
+        <!-- <a class=" red item" href="/login">Login</a>
+        <a class=" red item" href="/register">SignUp</a>
+        <a class=" red item" href="/logout">Logout</a> -->
+    </div>
+
+  </div>  
+
+  <div class="container">
+        <%if(error && error.length > 0){%>
+            <div class="alert alert-danger" role="alert">
+                <p><%=error%></p>
+            </div>
+        <%}%>
+        <%if(success && success.length > 0){%>
+            <div class="alert alert-success" role="alert">
+                <p><%=success%></p>
+            </div>
+        <%}%>
+    </div>
+    
