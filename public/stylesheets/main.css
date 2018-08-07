@@ -1,4 +1,4 @@
-body {
+body{
     margin: 0;
     padding: 0;
     background-color: #17a2b8;
@@ -11,6 +11,17 @@ a.button{
 .ui.large.menu{
     margin-left: 10%;
     margin-right: 10%;
+}
+
+.jumbotron h1{
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    white-space: nowrap;
+}
+
+.ui.search{
+
 }
 
 

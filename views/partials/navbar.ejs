@@ -1,13 +1,24 @@
 <div class="ui menu large stackable borderless inverted">
 
     <a href="/main" class="item">Home</a>
-    <a href="/search" class="item">Search</a>
+
+    <a href="/mylist" class="item">My List</a>
     <div class="right menu">
+
+        <!-- <div class="ui search">
+                            <div class="ui icon input">
+                              <input class="prompt" type="text" placeholder="TV Shows...">
+                              <i class="search icon"></i>
+                            </div>
+                            <div class="results"></div>
+        </div> -->
+
+          <a href="/search" class="item">Search</a>
           <%if(!currentUser){%>
             <a href="/login" id="loginButton" class="item">Login</a>
             <a href="/register" id="registerButton" class="item">Register</a>
           <%} else {%>  
-            <a class="item">Signed in As:<strong><%=" " + currentUser.username.toUpperCase()%></strong></a>
+            <a class="item"><strong><%=" " + currentUser.username.toUpperCase()%></strong></a>
             <a href="/logout" id="logoutButton" class="item">Logout</a>
           <%}%>
             <!-- <button class="compact ui button inverted black link" href="/login">Login</button>

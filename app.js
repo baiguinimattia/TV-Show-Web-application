@@ -125,6 +125,8 @@ app.get("/search/id/:text" , function( req , res){
     });
 });
 
+
+
 app.get("/show/:id" , isLoggedIn , function( req , res){
     tvdb.getSeriesById( req.params.id )
     .then(response => { 
@@ -135,6 +137,11 @@ app.get("/show/:id" , isLoggedIn , function( req , res){
         console.log(res.body);
         console.log(error); 
     });
+});
+
+
+app.get("/mylist" , function ( req , res) {
+    res.render("mylist");
 });
 
 

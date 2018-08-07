@@ -1,3 +1,6 @@
+
+// var content = [{}];
+
 //get request for search page
 $( "#search" ).click(function() {
     //remove previous search results
@@ -7,15 +10,15 @@ $( "#search" ).click(function() {
     var url = "/search/" + search;
     $.get(url)
     .done(function(data){
-        console.log(data);
         if ( data !== null && typeof data === 'object'){
             // $("#searchResult").text(data[0]);
             var stringToAppend = "";
             var number = 1;
             var numberOfResults = data.length + 1;
             data.forEach(function(serial){
+                    var urlTest = "/show/" + serial.id;
+                    content.push({title : serial.seriesName , url : urlTest }); 
                     if(serial.overview != "" && serial.overview != null){
-                        console.log(serial);
                         if(serial.banner != ''){
 
                             var image = "https://www.thetvdb.com/banners/" + serial.banner;
@@ -52,6 +55,7 @@ $( "#search" ).click(function() {
 
             })
         }
+        console.log(content);
     });
 });
 
@@ -65,3 +69,70 @@ $("#searchId").click(function(){
         $("#img").attr("src","https://www.thetvdb.com/banners/" + data);
     })
 });
+
+
+var focus = false;
+$(".prompt").keypress(function(e){
+        if ( e.which == 13){
+            $(".results").text("");
+            //setting focus
+            focus = true;
+            //adding loading animation
+            $(".ui.search").addClass("loading");
+
+            var search = $( "input[class='prompt']" ).val();
+            var url = "/search/" + search;
+            $.get(url)
+            .done(function(data){
+                console.log(data.length);
+                if ( data !== null && typeof data === "object"){
+                    data.forEach(function(serial){
+                        var stringToAppend = "";
+                        var url = "/show/" + serial.id;
+                        stringToAppend += "<a class='result' href='" + url + "'><div class='content'><div class='title'>" + serial.seriesName +"</div></div></a>";
+                        $(".results").append(stringToAppend);
+                        stringToAppend = "";
+                    })
+                    
+                }
+                $(".ui.search").removeClass("loading");
+                checkForFocus();
+            });
+
+        }
+});
+
+$(".ui.search").click(function(event ){
+    event.stopPropagation();
+    console.log("e ok");
+    focus = true;
+    checkForFocus();
+
+});
+$(".results").click(function(event ){
+    event.stopPropagation();
+    console.log("e ok din results");
+    focus = true;
+    checkForFocus();
+});
+
+$(window).click(function(){
+    console.log("nu e ok");
+    focus = false;
+    checkForFocus();
+});
+
+function checkForFocus(){
+    if(focus && $(".results").text()!= ""){
+        $(".search").addClass("focus");
+        $(".results").addClass("visible");
+        $(".results").removeClass("hidden");
+        $(".results").css("display" , "block");
+    }
+    else{
+        $(".search").removeClass("focus");
+        $(".results").addClass("hidden");
+        $(".results").removeClass("visible")
+        $(".results").css("display" , "none");
+    }
+}
