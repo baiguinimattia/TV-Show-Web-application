@@ -28,20 +28,20 @@ $( "#search" ).click(function() {
                         }
 
                             if ( number%2 != 0 && number == numberOfResults ){
-                                stringToAppend += "<div class='row'><div class='col-sm-6'><div class='card'><img class='card-img-top' src='" + image + "' alt='Card image cap'><div class='card-body'><h5 class='card-title'>" + serial.seriesName + "</h5><p class='card-text'>" + serial.overview.substring(0,50) + '...' + "</p><a href='/show/"+ serial.id + "' class='btn btn-primary'>Go somewhere</a></div></div></div></div>" ;
+                                stringToAppend += "<div class='row'><div class='col-sm-6'><div class='card'><img class='card-img-top' src='" + image + "' alt='Card image cap'><div class='card-body'><h5 class='card-title'>" + serial.seriesName + "</h5><p class='card-text'>" + serial.overview.substring(0,50) + '...' + "</p><a href='/shows/"+ serial.id + "' class='btn btn-primary'>Go somewhere</a></div></div></div></div>" ;
                                 $("#results").append(stringToAppend);
                                 stringToAppend = "";
                             }
                             else{
                                 if ( number%2 != 1 ){
-                                    stringToAppend += "<div class='col-sm-6'><div class='card'><img class='card-img-top' src='" + image + "' alt='Card image cap'><div class='card-body'><h5 class='card-title'>" + serial.seriesName + "</h5><p class='card-text'>" + serial.overview.substring(0,50) + '...' + "</p><a href='/show/"+ serial.id +"' class='btn btn-primary'>Go somewhere</a></div></div></div>"
+                                    stringToAppend += "<div class='col-sm-6'><div class='card'><img class='card-img-top' src='" + image + "' alt='Card image cap'><div class='card-body'><h5 class='card-title'>" + serial.seriesName + "</h5><p class='card-text'>" + serial.overview.substring(0,50) + '...' + "</p><a href='/shows/"+ serial.id +"' class='btn btn-primary'>Go somewhere</a></div></div></div>"
                                     stringToAppend += "</div>"
                                     $("#results").append(stringToAppend);
                                     stringToAppend = "";
                                 }
                                 else{
                                     if( number != 0 && number%2 == 1 ){
-                                        stringToAppend += "<div class='row'><div class='col-sm-6'><div class='card'><img class='card-img-top' src='" + image + "' alt='Card image cap'><div class='card-body'><h5 class='card-title'>" + serial.seriesName + "</h5><p class='card-text'>" + serial.overview.substring(0,50) + '...' + "</p><a href='/show/"+ serial.id + "' class='btn btn-primary'>Go somewhere</a></div></div></div>"
+                                        stringToAppend += "<div class='row'><div class='col-sm-6'><div class='card'><img class='card-img-top' src='" + image + "' alt='Card image cap'><div class='card-body'><h5 class='card-title'>" + serial.seriesName + "</h5><p class='card-text'>" + serial.overview.substring(0,50) + '...' + "</p><a href='/shows/"+ serial.id + "' class='btn btn-primary'>Go somewhere</a></div></div></div>"
 
                                     }                                
                                 }
@@ -71,15 +71,16 @@ $("#searchId").click(function(){
 });
 
 
+
 var focus = false;
-$(".prompt").keypress(function(e){
-        if ( e.which == 13){
-            $(".results").text("");
+
+$(".prompt").keypress(function(key){
+    if ( key.which == 13){
+        $(".results").text("");
             //setting focus
             focus = true;
             //adding loading animation
             $(".ui.search").addClass("loading");
-
             var search = $( "input[class='prompt']" ).val();
             var url = "/search/" + search;
             $.get(url)
@@ -88,7 +89,7 @@ $(".prompt").keypress(function(e){
                 if ( data !== null && typeof data === "object"){
                     data.forEach(function(serial){
                         var stringToAppend = "";
-                        var url = "/show/" + serial.id;
+                        var url = "/shows/" + serial.id;
                         stringToAppend += "<a class='result' href='" + url + "'><div class='content'><div class='title'>" + serial.seriesName +"</div></div></a>";
                         $(".results").append(stringToAppend);
                         stringToAppend = "";
@@ -98,9 +99,66 @@ $(".prompt").keypress(function(e){
                 $(".ui.search").removeClass("loading");
                 checkForFocus();
             });
-
-        }
+    }
 });
+
+
+// $(".ui.search").bind('input', function(){
+//     $(".results").text("");
+//             //setting focus
+//             focus = true;
+//             //adding loading animation
+//             $(".ui.search").addClass("loading");
+
+//             var search = $( "input[class='prompt']" ).val();
+//             var url = "/search/" + search;
+//             $.get(url)
+//             .done(function(data){
+//                 console.log(data.length);
+//                 if ( data !== null && typeof data === "object"){
+//                     data.forEach(function(serial){
+//                         var stringToAppend = "";
+//                         var url = "/shows/" + serial.id;
+//                         stringToAppend += "<a class='result' href='" + url + "'><div class='content'><div class='title'>" + serial.seriesName +"</div></div></a>";
+//                         $(".results").append(stringToAppend);
+//                         stringToAppend = "";
+//                     })
+                    
+//                 }
+//                 $(".ui.search").removeClass("loading");
+//                 checkForFocus();
+//             });
+//   });
+
+// $(".prompt").keypress(function(e){
+//         if ( e.which == 13){
+//             $(".results").text("");
+//             //setting focus
+//             focus = true;
+//             //adding loading animation
+//             $(".ui.search").addClass("loading");
+
+//             var search = $( "input[class='prompt']" ).val();
+//             var url = "/search/" + search;
+//             $.get(url)
+//             .done(function(data){
+//                 console.log(data.length);
+//                 if ( data !== null && typeof data === "object"){
+//                     data.forEach(function(serial){
+//                         var stringToAppend = "";
+//                         var url = "/shows/" + serial.id;
+//                         stringToAppend += "<a class='result' href='" + url + "'><div class='content'><div class='title'>" + serial.seriesName +"</div></div></a>";
+//                         $(".results").append(stringToAppend);
+//                         stringToAppend = "";
+//                     })
+                    
+//                 }
+//                 $(".ui.search").removeClass("loading");
+//                 checkForFocus();
+//             });
+
+//         }
+// });
 
 $(".ui.search").click(function(event ){
     event.stopPropagation();

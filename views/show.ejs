@@ -1,6 +1,28 @@
 <% include partials/header%>
 <% include partials/navbar%>
 
+<div class="container">
+
+    <div class="card">
+            <div class="card-header">
+              <%=show.seriesName%>
+            </div>
+            <div class="card-body">
+                <%var url = "https://www.thetvdb.com/banners/" + show.banner%>
+              <img src="<%=url%>" alt="">
+              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+              <a href="#" class="btn btn-primary">Go somewhere</a>
+            </div>
+    </div>
+
+
+
+    <h1 class="title"><%=show.seriesName%></h1>
+
+</div>
+
 
 <% include partials/scripts %>
+<link rel="stylesheet" href="/stylesheets/show.css">
+<script src="show.js"></script>
 <% include partials/footer %>

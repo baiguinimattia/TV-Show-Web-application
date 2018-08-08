@@ -127,15 +127,22 @@ app.get("/search/id/:text" , function( req , res){
 
 
 
-app.get("/show/:id" , isLoggedIn , function( req , res){
-    tvdb.getSeriesById( req.params.id )
+app.get("/shows/:id" , isLoggedIn , function( req , res){
+    var id = req.params.id;
+    console.log(id);
+    tvdb.getSeriesById(id)
     .then(response => { 
-        console.log(response);
-        res.render("show" , { show : response });       
+            console.log(response);
+            res.render("show" , { show : response });  
     })
-    .catch(error => {                     
-        console.log(res.body);
-        console.log(error); 
+    .catch(error => {           
+            if(error.response.status == 404){
+                console.log(error.response.status + "   " + error.response.statusText + "   " + error.response.url);
+            }   
+            else{
+                console.log(error); 
+            }       
+
     });
 });
 
