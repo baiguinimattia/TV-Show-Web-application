@@ -5,8 +5,7 @@ var UserSchema  = new mongoose.Schema({
     username: String,
     password : String,
     shows : [{
-        type : mongoose.Schema.Types.ObjectId,
-        ref : "Show"
+        idSerial : String
     }]
 });
 

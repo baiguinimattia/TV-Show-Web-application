@@ -28,20 +28,20 @@ $( "#search" ).click(function() {
                         }
 
                             if ( number%2 != 0 && number == numberOfResults ){
-                                stringToAppend += "<div class='row'><div class='col-sm-6'><div class='card'><img class='card-img-top' src='" + image + "' alt='Card image cap'><div class='card-body'><h5 class='card-title'>" + serial.seriesName + "</h5><p class='card-text'>" + serial.overview.substring(0,50) + '...' + "</p><a href='/show/"+ serial.id + "' class='btn btn-primary'>Go somewhere</a></div></div></div></div>" ;
+                                stringToAppend += "<div class='row'><div class='col-sm-6'><div class='card'><img class='card-img-top' src='" + image + "' alt='Card image cap'><div class='card-body'><h5 class='card-title'>" + serial.seriesName + "</h5><p class='card-text'>" + serial.overview.substring(0,50) + '...' + "</p><a href='/"+ serial.id + "' class='btn btn-primary'>Go somewhere</a></div></div></div></div>" ;
                                 $("#results").append(stringToAppend);
                                 stringToAppend = "";
                             }
                             else{
                                 if ( number%2 != 1 ){
-                                    stringToAppend += "<div class='col-sm-6'><div class='card'><img class='card-img-top' src='" + image + "' alt='Card image cap'><div class='card-body'><h5 class='card-title'>" + serial.seriesName + "</h5><p class='card-text'>" + serial.overview.substring(0,50) + '...' + "</p><a href='/show/"+ serial.id +"' class='btn btn-primary'>Go somewhere</a></div></div></div>"
+                                    stringToAppend += "<div class='col-sm-6'><div class='card'><img class='card-img-top' src='" + image + "' alt='Card image cap'><div class='card-body'><h5 class='card-title'>" + serial.seriesName + "</h5><p class='card-text'>" + serial.overview.substring(0,50) + '...' + "</p><a href='/"+ serial.id +"' class='btn btn-primary'>Go somewhere</a></div></div></div>"
                                     stringToAppend += "</div>"
                                     $("#results").append(stringToAppend);
                                     stringToAppend = "";
                                 }
                                 else{
                                     if( number != 0 && number%2 == 1 ){
-                                        stringToAppend += "<div class='row'><div class='col-sm-6'><div class='card'><img class='card-img-top' src='" + image + "' alt='Card image cap'><div class='card-body'><h5 class='card-title'>" + serial.seriesName + "</h5><p class='card-text'>" + serial.overview.substring(0,50) + '...' + "</p><a href='/show/"+ serial.id + "' class='btn btn-primary'>Go somewhere</a></div></div></div>"
+                                        stringToAppend += "<div class='row'><div class='col-sm-6'><div class='card'><img class='card-img-top' src='" + image + "' alt='Card image cap'><div class='card-body'><h5 class='card-title'>" + serial.seriesName + "</h5><p class='card-text'>" + serial.overview.substring(0,50) + '...' + "</p><a href='/"+ serial.id + "' class='btn btn-primary'>Go somewhere</a></div></div></div>"
 
                                     }                                
                                 }
@@ -89,7 +89,7 @@ $(".prompt").keypress(function(key){
                 if ( data !== null && typeof data === "object"){
                     data.forEach(function(serial){
                         var stringToAppend = "";
-                        var url = "/show/" + serial.id;
+                        var url = "/" + serial.id;
                         stringToAppend += "<a class='result' href='" + url + "'><div class='content'><div class='title'>" + serial.seriesName +"</div></div></a>";
                         $(".results").append(stringToAppend);
                         stringToAppend = "";

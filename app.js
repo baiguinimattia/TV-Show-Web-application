@@ -131,11 +131,9 @@ app.get("/search/id/:text" , function( req , res){
 
 
 
-app.get("/show/:id" , isLoggedIn , function( req , res){
+app.get("/:id" , isLoggedIn , function( req , res){
     var id = req.params.id
     // console.log(id);
- 
-
     tvdb.getSeriesById(id)
     .then(response => { 
                 console.log("vine serial pentru show");
@@ -145,7 +143,7 @@ app.get("/show/:id" , isLoggedIn , function( req , res){
                     console.log("vine response de la searchPosters");
                     // console.log(responseImage[0]);
                     // res.send(response[0].fileName);  
-                    res.render("show" , { show : response , images : responseImage });      
+                    res.render("serial" , { show : response , images : responseImage });      
                 })
                 .catch(error => {                     
                     console.log(error);
@@ -170,7 +168,7 @@ app.get("/mylist" , function ( req , res) {
 });
 
 
-app.post("/show/:id" , isLoggedIn , function( req , res){
+app.post("/:id" , isLoggedIn , function( req , res){
     var originalId = req.params.id;
     var ifLiked = false;
     var ifList = true;
@@ -179,18 +177,102 @@ app.post("/show/:id" , isLoggedIn , function( req , res){
         ifLiked : ifLiked,
         ifList : ifList
     }
-    var newShow = new Show({ originalId : originalId , ifLiked , ifList});
-    newShow.users.push(user);
-    Show.create(function(error , show){
+    Show.find({originalId : "274431"} , function(error , data){
         if( error){
             console.log(error);
         }
         else{
-            console.log(show);
-            show.save();
-            req.flash("success" , "The show was succesfully created.");
+            if(data.length > 0 ){
+                console.log("gasit");
+                console.log(data[0].users);
+                var exists = false;
+                data[0].users.forEach(function(user){
+                        if (user._id.equals(req.user._id)){
+                            console.log("am gasit user'ul curent in serial")
+                            exists = true;
+                        }
+                });
+                if(!exists){
+                    console.log("nu exista user in serial si se adauga")
+                    data[0].users.push(req.user._id);
+
+                    console.log("se salveaza serialul adaugand user'ul curent");
+                    data[0].save(function(error , updatedShow){
+                        if( error ) {
+                            console.log(error);
+                        }
+                        else{
+                            console.log(updatedShow);
+                        }
+                       
+                    });
+
+                    console.log("adaugam serialul la user curent");
+
+                    User.find( { _id : req.user._id} , function( error , foundUser){
+                        if( error){
+                            console.log(error);
+                        }
+                        else{
+                            if(foundUser.length > 0 ){
+                                console.log("user gasit pentru a se adauga serialul");
+                                foundUser[0].shows.push({ idSerial : originalId } );
+                            }
+                        }
+                    })
+                }                
+            }
+            else{
+                var newShow = new Show({ originalId : originalId , ifLiked , ifList});
+                newShow.users.push(user);
+                console.log("new");
+                console.log(newShow);
+                Show.create(newShow , function(error , newSerial){
+                    if( error){
+                        console.log(error);
+                        req.flash("error" , "The show was not created.");
+                        // res.render("search");
+                    }
+                    else{
+                        console.log(newSerial);
+                        newSerial.save();
+
+                        console.log("cautam user'ul curent si adaugam serialul dupa crearea acestuia");
+                        User.find({ _id : req.user._id} , function( error , foundUser){
+                            if( error){
+                                console.log(error);
+                            }
+                            else{
+                                if(foundUser.length > 0){
+                                    console.log(originalId);
+                                    foundUser[0].shows.push( { idSerial : originalId } );
+                                    console.log("aratam array de seriale" + foundUser[0].shows);
+                                    foundUser[0].save(function (error , updatedUser) {
+                                        if( error){
+                                            console.log(error);
+                                        }
+                                        else{
+                                            console.log("updated user with serial");
+                                        }
+                                    });
+                                }
+                            }
+                        })
+
+
+
+                        req.flash("success" , "The show was succesfully created.");
+                        // res.redirect("back");
+                    }
+                });
+            }
+
+            
         }
-    });
+    })
+
+
+
     
 });
 
