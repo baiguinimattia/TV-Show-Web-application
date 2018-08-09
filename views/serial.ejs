@@ -1,11 +1,14 @@
 <% include partials/header%>
 <% include partials/navbar%>
 
+<%var data = serial%>
 <div class="">
-        <img src="https://www.thetvdb.com/banners/<%=images[0].fileName%>" alt="">
-        <h1><%=show.seriesName%></h1>
+        <img src="https://www.thetvdb.com/banners/<%=image.fileName%>" alt="">
+        <h1><%=serial.seriesName%></h1>
         <button id="addList">Test</button>
 </div>
+
+<div class="hidden"><%=serial.id%></div>
 
 
 

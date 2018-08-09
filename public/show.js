@@ -1,5 +1,6 @@
 $("#addList").click(function() {
-    var url = "/274431"
+    var serial = $(".hidden").text();    
+    var url = "/" + serial;
     $.post(url , function( data ){
             console.log(data);
     })

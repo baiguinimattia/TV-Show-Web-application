@@ -143,7 +143,7 @@ app.get("/:id" , isLoggedIn , function( req , res){
                     console.log("vine response de la searchPosters");
                     // console.log(responseImage[0]);
                     // res.send(response[0].fileName);  
-                    res.render("serial" , { show : response , images : responseImage });      
+                    res.render("serial" , { serial : response , image : responseImage[0] });      
                 })
                 .catch(error => {                     
                     console.log(error);
@@ -177,7 +177,8 @@ app.post("/:id" , isLoggedIn , function( req , res){
         ifLiked : ifLiked,
         ifList : ifList
     }
-    Show.find({originalId : "274431"} , function(error , data){
+    console.log(originalId);
+    Show.find({originalId : originalId } , function(error , data){
         if( error){
             console.log(error);
         }
@@ -187,14 +188,14 @@ app.post("/:id" , isLoggedIn , function( req , res){
                 console.log(data[0].users);
                 var exists = false;
                 data[0].users.forEach(function(user){
-                        if (user._id.equals(req.user._id)){
+                        if (user.id.equals(req.user._id)){
                             console.log("am gasit user'ul curent in serial")
                             exists = true;
                         }
                 });
                 if(!exists){
                     console.log("nu exista user in serial si se adauga")
-                    data[0].users.push(req.user._id);
+                    data[0].users.push({ id : req.user._id , ifLiked : false , ifList : true});
 
                     console.log("se salveaza serialul adaugand user'ul curent");
                     data[0].save(function(error , updatedShow){
@@ -217,6 +218,7 @@ app.post("/:id" , isLoggedIn , function( req , res){
                             if(foundUser.length > 0 ){
                                 console.log("user gasit pentru a se adauga serialul");
                                 foundUser[0].shows.push({ idSerial : originalId } );
+                                res.render("main");
                             }
                         }
                     })
@@ -253,6 +255,7 @@ app.post("/:id" , isLoggedIn , function( req , res){
                                         }
                                         else{
                                             console.log("updated user with serial");
+                                            res.render("main");
                                         }
                                     });
                                 }

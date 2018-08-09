@@ -17,3 +17,7 @@ img {
     color: white;
     font-size: 25px;
 }
+
+.hidden {
+    display: none;
+}
