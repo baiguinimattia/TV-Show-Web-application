@@ -3,15 +3,8 @@ var passportLocalMongoose = require("passport-local-mongoose");
 
 var ShowSchema  = new mongoose.Schema({
     originalId : String,
-    users : [{
-        id : {
-            type : mongoose.Schema.Types.ObjectId,
-            ref : "User"
-        },
-        ifLiked : Boolean,
-        ifList : Boolean
-    }]
-    
+    numberOfLikes : { type: Number, default: 0 },
+    numberOfLists : { type: Number, default: 0 }
 });
 
 ShowSchema.plugin(passportLocalMongoose);

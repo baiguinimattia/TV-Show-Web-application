@@ -21,3 +21,8 @@ img {
 .hidden {
     display: none;
 }
+
+.ui.menu.large {
+    margin-top: 0;
+    margin-bottom: 0;
+}

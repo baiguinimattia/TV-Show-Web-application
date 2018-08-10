@@ -131,6 +131,11 @@ app.get("/search/id/:text" , function( req , res){
 
 
 
+app.get("/mylist" , function ( req , res) {
+    res.render("mylist");
+});
+
+
 app.get("/:id" , isLoggedIn , function( req , res){
     var id = req.params.id
     // console.log(id);
@@ -143,7 +148,7 @@ app.get("/:id" , isLoggedIn , function( req , res){
                     console.log("vine response de la searchPosters");
                     // console.log(responseImage[0]);
                     // res.send(response[0].fileName);  
-                    res.render("serial" , { serial : response , image : responseImage[0] });      
+                    res.render("show" , { serial : response , image : responseImage[0] });      
                 })
                 .catch(error => {                     
                     console.log(error);
@@ -163,21 +168,9 @@ app.get("/:id" , isLoggedIn , function( req , res){
         
 
 
-app.get("/mylist" , function ( req , res) {
-    res.render("mylist");
-});
-
-
 app.post("/:id" , isLoggedIn , function( req , res){
     var originalId = req.params.id;
-    var ifLiked = false;
-    var ifList = true;
-    var user = {
-        id : req.user._id,
-        ifLiked : ifLiked,
-        ifList : ifList
-    }
-    console.log(originalId);
+    // var ifList = req.add;
     Show.find({originalId : originalId } , function(error , data){
         if( error){
             console.log(error);
@@ -185,48 +178,51 @@ app.post("/:id" , isLoggedIn , function( req , res){
         else{
             if(data.length > 0 ){
                 console.log("gasit");
-                console.log(data[0].users);
-                var exists = false;
-                data[0].users.forEach(function(user){
-                        if (user.id.equals(req.user._id)){
-                            console.log("am gasit user'ul curent in serial")
-                            exists = true;
-                        }
-                });
-                if(!exists){
-                    console.log("nu exista user in serial si se adauga")
-                    data[0].users.push({ id : req.user._id , ifLiked : false , ifList : true});
-
-                    console.log("se salveaza serialul adaugand user'ul curent");
-                    data[0].save(function(error , updatedShow){
-                        if( error ) {
+                User.find( { _id : req.user._id} , function( error , foundUser){
+                    if(error){
                             console.log(error);
-                        }
-                        else{
-                            console.log(updatedShow);
-                        }
-                       
-                    });
+                    }
+                    else{
+                            if(foundUser.length > 0){
+                                var test = false;
+                                foundUser[0].myList.forEach(function(serial){
+                                    if(serial.idSerial == originalId){
+                                        console.log("a gasit serialul in lista la user'ul curent , vedem ce o sa facem");
+                                        test = true;
+                                    }
+                                })
+                                if(test == false){
+                                    console.log("nu am gasit serialul curent in lista user'ului");
+                                    var serial = { idSerial : originalId};
+                                    foundUser[0].myList.push(serial);
+                                    console.log("am adaugat serialul curent in lista user'ului");
+                                    foundUser[0].save(function(error , updatedUser){
+                                        if(error){
+                                            console.log(error);
+                                        }
+                                        else{
+                                            console.log("user updatat cu succes");
+                                            console.log(updatedUser);
+                                        }
+                                    });
 
-                    console.log("adaugam serialul la user curent");
-
-                    User.find( { _id : req.user._id} , function( error , foundUser){
-                        if( error){
-                            console.log(error);
-                        }
-                        else{
-                            if(foundUser.length > 0 ){
-                                console.log("user gasit pentru a se adauga serialul");
-                                foundUser[0].shows.push({ idSerial : originalId } );
-                                res.render("main");
+                                    data[0].numberOfLists += 1;
+                                    data[0].save(function(error , updatedShow){
+                                        if(error){
+                                            console.log(error);
+                                        }
+                                        else{
+                                            console.log("s-a incrementat numarul de liste la serialul curent");
+                                            console.log(updatedShow);
+                                        }
+                                    })
+                                }
                             }
-                        }
-                    })
-                }                
+                    }
+                });
             }
             else{
-                var newShow = new Show({ originalId : originalId , ifLiked , ifList});
-                newShow.users.push(user);
+                var newShow = new Show({ originalId : originalId});
                 console.log("new");
                 console.log(newShow);
                 Show.create(newShow , function(error , newSerial){
@@ -247,8 +243,8 @@ app.post("/:id" , isLoggedIn , function( req , res){
                             else{
                                 if(foundUser.length > 0){
                                     console.log(originalId);
-                                    foundUser[0].shows.push( { idSerial : originalId } );
-                                    console.log("aratam array de seriale" + foundUser[0].shows);
+                                    foundUser[0].myList.push( { idSerial : originalId } );
+                                    console.log("aratam array de seriale" + foundUser[0].myList);
                                     foundUser[0].save(function (error , updatedUser) {
                                         if( error){
                                             console.log(error);
@@ -289,6 +285,14 @@ function isLoggedIn( req , res , next){
     req.flash("error" , "You need to be logged in to do that.");
     res.redirect("/login");
 };
+
+function ifLiked( id , serial ){
+    Show.find( {originalId : serial} , function( error , response){
+            response[0].users.forEach(function(user){
+
+            });
+    });
+}
 
 
 
