@@ -15,7 +15,7 @@ const tvdb = new TVDB('5YFSVMD76MRV5ZB7');
 
 
 
-mongoose.connect("mongodb://localhost:27017/licentaDB" , {useNewUrlParser : true});
+mongoose.connect("mongodb://localhost:27017/licenta" , {useNewUrlParser : true});
 app.set("view engine" , "ejs");
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended : true}));
@@ -170,7 +170,9 @@ app.get("/:id" , isLoggedIn , function( req , res){
 
 app.post("/:id" , isLoggedIn , function( req , res){
     var originalId = req.params.id;
-    // var ifList = req.add;
+    var addList = req.body.addList;
+    console.log(addList);
+    var addLike = req.body.addLike;
     Show.find({originalId : originalId } , function(error , data){
         if( error){
             console.log(error);
@@ -205,8 +207,15 @@ app.post("/:id" , isLoggedIn , function( req , res){
                                             console.log(updatedUser);
                                         }
                                     });
+                                    if ( addList === "true"){
+                                        data[0].numberOfLists += 1;
+                                        console.log("am incrementat numarul de liste")
+                                    }
+                                    else{
+                                        data[0].numberOfLikes += 1;
+                                        console.log("am incrementat numarul de like'uri");
 
-                                    data[0].numberOfLists += 1;
+                                    }
                                     data[0].save(function(error , updatedShow){
                                         if(error){
                                             console.log(error);
@@ -222,7 +231,13 @@ app.post("/:id" , isLoggedIn , function( req , res){
                 });
             }
             else{
-                var newShow = new Show({ originalId : originalId});
+                if(addList == true){
+                    var newShow = new Show({ originalId : originalId , numberOfLikes : 0 , numberOfLists : 1});
+                }
+                else{
+                    var newShow = new Show({ originalId : originalId , numberOfLikes : 1 , numberOfLists : 0});
+                }
+
                 console.log("new");
                 console.log(newShow);
                 Show.create(newShow , function(error , newSerial){
@@ -274,7 +289,6 @@ app.post("/:id" , isLoggedIn , function( req , res){
 
     
 });
-
 
 
 function isLoggedIn( req , res , next){
