@@ -115,7 +115,7 @@ app.get("/search/:text" , function(req , res){
 
 app.get("/search/id/:text" , function( req , res){
     var text = req.params.text;
-    tvdb.getSeriesPosters(text)
+    tvdb.getSeriesById(text)
     .then(response => { 
         console.log(response);
         // res.send(response[0].fileName);  
@@ -131,8 +131,26 @@ app.get("/search/id/:text" , function( req , res){
 
 
 
-app.get("/mylist" , function ( req , res) {
-    res.render("mylist");
+app.get("/mylist" , isLoggedIn , function ( req , res) {
+    var list = [];
+    console.log(req.user._id);
+    User.find( { _id : req.user._id} , function(error , foundUser){
+        if(error){
+            console.log(error);
+        }
+        else{
+            if(foundUser.length > 0){
+                console.log(foundUser[0].myList)
+                foundUser[0].myList.forEach(function(element){
+                    list.push(element.idSerial);
+                })
+                res.render("mylist" , { myList : list });
+            }
+
+
+        }
+    })
+    
 });
 
 
@@ -171,7 +189,7 @@ app.get("/:id" , isLoggedIn , function( req , res){
 app.post("/:id" , isLoggedIn , function( req , res){
     var originalId = req.params.id;
     var addList = req.body.addList;
-    console.log(addList);
+    console.log(typeof addList);
     var addLike = req.body.addLike;
     Show.find({originalId : originalId } , function(error , data){
         if( error){
@@ -186,70 +204,64 @@ app.post("/:id" , isLoggedIn , function( req , res){
                     }
                     else{
                             if(foundUser.length > 0){
-                                var test = false;
-                                foundUser[0].myList.forEach(function(serial){
-                                    if(serial.idSerial == originalId){
-                                        console.log("a gasit serialul in lista la user'ul curent , vedem ce o sa facem");
-                                        test = true;
-                                    }
-                                })
-                                if(test == false){
-                                    console.log("nu am gasit serialul curent in lista user'ului");
-                                    var serial = { idSerial : originalId};
-                                    foundUser[0].myList.push(serial);
-                                    console.log("am adaugat serialul curent in lista user'ului");
-                                    foundUser[0].save(function(error , updatedUser){
-                                        if(error){
-                                            console.log(error);
-                                        }
-                                        else{
-                                            console.log("user updatat cu succes");
-                                            console.log(updatedUser);
-                                        }
-                                    });
-                                    if ( addList === "true"){
-                                        data[0].numberOfLists += 1;
-                                        console.log("am incrementat numarul de liste")
+                                var search = checkLists(foundUser[0] , originalId);
+                                console.log(search);
+                                if(addList == "true"){
+                                    if(search.addList){
+                                        foundUser[0].myList.splice(search.positionInList, 1);
+                                        console.log("element gasit + apasat = stergere");
+                                        console.log("decrementam numarul de liste");
+                                        data[0].numberOfLists -= 1;
+                                        updateShow(data[0]);
                                     }
                                     else{
-                                        data[0].numberOfLikes += 1;
-                                        console.log("am incrementat numarul de like'uri");
-
+                                        var serial = { idSerial : originalId};
+                                        foundUser[0].myList.push(serial);
+                                        console.log("am adaugat serialul curent in lista user'ului");
+                                        console.log("incrementam numarul de liste al serialului curent");
+                                        data[0].numberOfLists += 1;
+                                        updateShow(data[0]);
                                     }
-                                    data[0].save(function(error , updatedShow){
-                                        if(error){
-                                            console.log(error);
+                                }
+                                if(addLike == "true"){
+                                        if(search.addLike){
+                                            foundUser[0].likes.splice(search.positionInLike, 1);
+                                            console.log("element gasit + apasat = stergere");
+                                            updateUser(foundUser[0]);
+                                            console.log("decrementam numarul de like");
+                                            data[0].numberOfLikes -= 1;
+                                            updateShow(data[0]);
                                         }
                                         else{
-                                            console.log("s-a incrementat numarul de liste la serialul curent");
-                                            console.log(updatedShow);
-                                        }
-                                    })
+                                                var serial = { idSerial : originalId};
+                                                foundUser[0].likes.push(serial);
+                                                console.log("am adaugat serialul curent in lista de like a user'ului");
+                                                updateUser(foundUser[0]);
+                                                console.log("incrementam numarul de likes al serialului curent");
+                                                data[0].numberOfLikes += 1;
+                                                updateShow(data[0]);
+                                            }
                                 }
-                            }
+                            }           
                     }
                 });
             }
             else{
-                if(addList == true){
+                if(addList == "true"){
                     var newShow = new Show({ originalId : originalId , numberOfLikes : 0 , numberOfLists : 1});
                 }
                 else{
                     var newShow = new Show({ originalId : originalId , numberOfLikes : 1 , numberOfLists : 0});
                 }
-
                 console.log("new");
                 console.log(newShow);
                 Show.create(newShow , function(error , newSerial){
                     if( error){
                         console.log(error);
-                        req.flash("error" , "The show was not created.");
-                        // res.render("search");
                     }
                     else{
                         console.log(newSerial);
                         newSerial.save();
-
                         console.log("cautam user'ul curent si adaugam serialul dupa crearea acestuia");
                         User.find({ _id : req.user._id} , function( error , foundUser){
                             if( error){
@@ -259,7 +271,7 @@ app.post("/:id" , isLoggedIn , function( req , res){
                                 if(foundUser.length > 0){
                                     console.log(originalId);
                                     foundUser[0].myList.push( { idSerial : originalId } );
-                                    console.log("aratam array de seriale" + foundUser[0].myList);
+                                    console.log("aratam array de seriale");
                                     foundUser[0].save(function (error , updatedUser) {
                                         if( error){
                                             console.log(error);
@@ -273,22 +285,58 @@ app.post("/:id" , isLoggedIn , function( req , res){
                             }
                         })
 
-
-
-                        req.flash("success" , "The show was succesfully created.");
-                        // res.redirect("back");
+                    
                     }
                 });
-            }
-
-            
+            } 
         }
     })
-
-
-
-    
 });
+
+function updateUser(user){
+    User.findByIdAndUpdate( user._id , user , function( error , updatedUser){
+        if ( error){
+                console.log(error);
+        }
+        else{
+                console.log("user updated");
+       }
+    });
+}
+
+function updateShow(show){
+    Show.findByIdAndUpdate( show._id , show , function( error , updatedShow){
+        if ( error){
+                console.log(error);
+        }
+        else{
+                console.log("show updated");
+       }
+    });
+}
+
+
+function checkLists(user , originalId){
+    var addList = false;
+    var positionInList = -1;
+    var addLike = false;
+    var positionInLike = -1;
+    for(var i=0; i < user.myList.length ; i++ ){
+        if(user.myList[i].idSerial == originalId){
+            addList = true;
+            positionInList = i;
+        }
+    }
+    for(var i=0; i < user.likes.length ; i++ ){
+        if(user.likes[i].idSerial == originalId){
+            addLike = true;
+            positionInLike = i;
+        }
+    }
+    var object = { addList : addList , positionInList : positionInList , addLike : addLike , positionInLike : positionInLike };
+    return object;
+    
+}    
 
 
 function isLoggedIn( req , res , next){
