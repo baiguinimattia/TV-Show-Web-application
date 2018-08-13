@@ -1,16 +1,17 @@
 <% include partials/header%>
 <% include partials/navbar%>
 
-<%var data = serial%>
 <div class="">
         <img src="https://www.thetvdb.com/banners/<%=image.fileName%>" alt="">
         <h1><%=serial.seriesName%></h1>
-        <button id="addList">Add to my list</button>
-        <button id="addLike">Like</button>
+        <button class="ui toggle button addList">Add to my list</button>
+        <button class="ui toggle button addLike">Like | <%=likes%></button>
 </div>
 
-<div class="hidden"><%=serial.id%></div>
-
+<div class="hidden serial"><%=serial.id%></div>
+<div class="hidden numberOfLikes"><%=likes%></div>
+<div class="hidden list"><%=ifList%></div>
+<div class="hidden like"><%=ifLike%></div>
 
 
 

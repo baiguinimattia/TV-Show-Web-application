@@ -13,8 +13,6 @@ var express = require("express"),
 const TVDB = require('node-tvdb');
 const tvdb = new TVDB('5YFSVMD76MRV5ZB7');
 
-
-
 mongoose.connect("mongodb://localhost:27017/licenta" , {useNewUrlParser : true});
 app.set("view engine" , "ejs");
 app.use(express.static("public"));
@@ -81,9 +79,7 @@ app.get("/login"  , function( req , res){
     res.render("login");
 });
 
-app.post("/login" , passport.authenticate("local" , {successRedirect : "/main" , failureRedirect : "/login" , failureFlash: true , successFlash: 'Welcome!'  }), function(req , res ){
-    
-});
+app.post("/login" , passport.authenticate("local" , {successRedirect : "/main" , failureRedirect : "/login" , failureFlash: true , successFlash: 'Welcome!'  }), function(req , res ){});
 
 app.get("/logout" , isLoggedIn , function(req , res){
     req.logout();
@@ -91,13 +87,9 @@ app.get("/logout" , isLoggedIn , function(req , res){
     res.redirect("/main");
 })
 
-// app.get("https://api.thetvdb.com/search/series/:name" , function(req , res){
-
-
 app.get("/search" , isLoggedIn ,  function( req , res){
         res.render("search");
 });
-
 
 app.get("/search/:text" , function(req , res){
     var text = req.params.text;
@@ -117,8 +109,6 @@ app.get("/search/id/:text" , function( req , res){
     var text = req.params.text;
     tvdb.getSeriesById(text)
     .then(response => { 
-        console.log(response);
-        // res.send(response[0].fileName);  
         res.send(response);        
 
     })
@@ -128,8 +118,6 @@ app.get("/search/id/:text" , function( req , res){
     });
 
 });
-
-
 
 app.get("/mylist" , isLoggedIn , function ( req , res) {
     var list = [];
@@ -143,35 +131,53 @@ app.get("/mylist" , isLoggedIn , function ( req , res) {
                 console.log(foundUser[0].myList)
                 foundUser[0].myList.forEach(function(element){
                     list.push(element.idSerial);
+                    console.log(element.idSerial);
                 })
                 res.render("mylist" , { myList : list });
             }
-
-
         }
     })
-    
+
 });
 
-
 app.get("/:id" , isLoggedIn , function( req , res){
-    var id = req.params.id
-    // console.log(id);
+    var id = req.params.id;
     tvdb.getSeriesById(id)
     .then(response => { 
-                console.log("vine serial pentru show");
-                // console.log(response);
-                tvdb.getSeriesImages(id , "fanart")
-                .then(responseImage => { 
-                    console.log("vine response de la searchPosters");
-                    // console.log(responseImage[0]);
-                    // res.send(response[0].fileName);  
-                    res.render("show" , { serial : response , image : responseImage[0] });      
-                })
-                .catch(error => {                     
-                    console.log(error);
+                getImages(id , function(image){
+                    console.log("callback getImages");
+                    getLikes(id , function(likes){
+                    console.log("se intra in getLikes " + likes);
+                        User.find({_id : req.user._id} , function(error , foundUser){
+                            if(foundUser.length > 0){
+                                console.log("am gasit user");
+
+                                checkLists(foundUser[0] , id , function(data){
+                                    console.log("se intra in checkLists");
+                                    var ifLike = false;
+                                    var ifList = false;
+                                    foundUser[0].likes.forEach(function(element){
+                                        if(element.idSerial == id){
+                                            ifLike = true;
+                                        }
+                                    })
+                                    foundUser[0].myList.forEach(function(element){
+                                        if(element.idSerial == id){
+                                            ifList = true;
+                                        }
+                                    })
+                                    console.log("se transmit datele");
+                                    console.log("image " + image + " likes " + likes + " ifLike " + ifLike + " ifList " + ifList);
+                                    res.render("show" , { serial : response , image : image , likes : likes , ifLike : ifLike , ifList : ifList}); 
+
+                                })
+
+                            }
+                        })
+                        
+                    })
+
                 });
-                 
     })
     .catch(error => {           
                 if(error.response.status == 404){
@@ -183,8 +189,6 @@ app.get("/:id" , isLoggedIn , function( req , res){
     
     });
 });
-        
-
 
 app.post("/:id" , isLoggedIn , function( req , res){
     var originalId = req.params.id;
@@ -204,51 +208,54 @@ app.post("/:id" , isLoggedIn , function( req , res){
                     }
                     else{
                             if(foundUser.length > 0){
-                                var search = checkLists(foundUser[0] , originalId);
-                                console.log(search);
-                                if(addList == "true"){
-                                    if(search.addList && search.positionInList != -1){
-                                        foundUser[0].myList.splice(search.positionInList, 1);
-                                        updateUser(foundUser[0]);
-                                        console.log("element gasit + apasat = stergere");
-                                        console.log("decrementam numarul de liste");
-                                        data[0].numberOfLists -= 1;
-                                        updateShow(data[0]);
-                                    }
-                                    else{
-                                        var serial = { idSerial : originalId};
-                                        foundUser[0].myList.push(serial);
-                                        updateUser(foundUser[0]);
-                                        console.log("am adaugat serialul curent in lista user'ului");
-                                        console.log("incrementam numarul de liste al serialului curent");
-                                        data[0].numberOfLists += 1;
-                                        updateShow(data[0]);
-                                    }
-                                }
-                                if(addLike == "true"){
-                                        if(search.addLike && search.positionInLike != -1){
-                                            foundUser[0].likes.splice(search.positionInLike, 1);
-                                            console.log("element gasit + apasat = stergere");
+                                checkLists(foundUser[0] , originalId , function(search){
+                                    console.log(search);
+                                    if(addList == "true"){
+                                        if(search.addList && search.positionInList != -1){
+                                            foundUser[0].myList.splice(search.positionInList, 1);
                                             updateUser(foundUser[0]);
-                                            console.log("decrementam numarul de like");
-                                            data[0].numberOfLikes -= 1;
+                                            console.log("element gasit + apasat = stergere");
+                                            console.log("decrementam numarul de liste");
+                                            data[0].numberOfLists -= 1;
                                             updateShow(data[0]);
                                         }
                                         else{
-                                                var serial = { idSerial : originalId};
-                                                foundUser[0].likes.push(serial);
-                                                console.log("am adaugat serialul curent in lista de like a user'ului");
+                                            var serial = { idSerial : originalId};
+                                            foundUser[0].myList.push(serial);
+                                            updateUser(foundUser[0]);
+                                            console.log("am adaugat serialul curent in lista user'ului");
+                                            console.log("incrementam numarul de liste al serialului curent");
+                                            data[0].numberOfLists += 1;
+                                            updateShow(data[0]);
+                                        }
+                                    }
+                                    if(addLike == "true"){
+                                            if(search.addLike && search.positionInLike != -1){
+                                                foundUser[0].likes.splice(search.positionInLike, 1);
+                                                console.log("element gasit + apasat = stergere");
                                                 updateUser(foundUser[0]);
-                                                console.log("incrementam numarul de likes al serialului curent");
-                                                data[0].numberOfLikes += 1;
+                                                console.log("decrementam numarul de like");
+                                                data[0].numberOfLikes -= 1;
                                                 updateShow(data[0]);
                                             }
-                                }
+                                            else{
+                                                    var serial = { idSerial : originalId};
+                                                    foundUser[0].likes.push(serial);
+                                                    console.log("am adaugat serialul curent in lista de like a user'ului");
+                                                    updateUser(foundUser[0]);
+                                                    console.log("incrementam numarul de likes al serialului curent");
+                                                    data[0].numberOfLikes += 1;
+                                                    updateShow(data[0]);
+                                                }
+                                    }
+                                });
+                                
                             }           
                     }
                 });
             }
             else{
+                console.log("vine original id la creare " + originalId);
                 if(addList == "true"){
                     var newShow = new Show({ originalId : originalId , numberOfLikes : 0 , numberOfLists : 1});
                 }
@@ -273,16 +280,7 @@ app.post("/:id" , isLoggedIn , function( req , res){
                                 if(foundUser.length > 0){
                                     console.log(originalId);
                                     foundUser[0].myList.push( { idSerial : originalId } );
-                                    console.log("aratam array de seriale");
-                                    foundUser[0].save(function (error , updatedUser) {
-                                        if( error){
-                                            console.log(error);
-                                        }
-                                        else{
-                                            console.log("updated user with serial");
-                                            res.render("main");
-                                        }
-                                    });
+                                    updateUser(foundUser[0]);
                                 }
                             }
                         })
@@ -294,6 +292,33 @@ app.post("/:id" , isLoggedIn , function( req , res){
         }
     })
 });
+
+function getLikes(id , callback){
+    Show.find({originalId : id} , function(error , foundShow){
+        if(error){
+            console.log(error);
+        }
+        else{
+            if(foundShow.length > 0){
+                console.log(foundShow[0]);
+                callback(foundShow[0].numberOfLikes);
+            }
+            else{
+                callback(0);
+            }
+        }
+    })
+}
+        
+function getImages(id , callback){
+    tvdb.getSeriesImages(id , "fanart")
+                .then(responseImage => { 
+                    callback(responseImage[0]);   
+                })
+                .catch(error => {                     
+                    console.log(error);
+                });
+}
 
 function updateUser(user){
     User.findByIdAndUpdate( user._id , user , function( error , updatedUser){
@@ -318,7 +343,7 @@ function updateShow(show){
 }
 
 
-function checkLists(user , originalId){
+function checkLists(user , originalId , callback){
     var addList = false;
     var positionInList = -1;
     var addLike = false;
@@ -336,11 +361,9 @@ function checkLists(user , originalId){
         }
     }
     var object = { addList : addList , positionInList : positionInList , addLike : addLike , positionInLike : positionInLike };
-    return object;
+    callback(object);
     
 }    
-
-
 function isLoggedIn( req , res , next){
     // console.log(req);
     if( req.isAuthenticated()){
@@ -350,17 +373,6 @@ function isLoggedIn( req , res , next){
     res.redirect("/login");
 };
 
-function ifLiked( id , serial ){
-    Show.find( {originalId : serial} , function( error , response){
-            response[0].users.forEach(function(user){
-
-            });
-    });
-}
-
-
-
 app.listen( 3000 , function(){
     console.log("Server Running!");
-}); 
-
+});

@@ -26,3 +26,12 @@ img {
     margin-top: 0;
     margin-bottom: 0;
 }
+.ui.button:focus{
+    background-color: #cacbcd;
+    color: rgba(0, 0, 0, .8);
+}
+.ui.button.toggle.active{
+    background-color: #16ab39;
+    text-shadow: none;
+    color: #fff;
+}

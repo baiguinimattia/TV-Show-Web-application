@@ -52,7 +52,7 @@ function loadList(objects){
 
                     if ( number%2 == 1 && number == objects.length ){
                         stringToAppend += "<div class='row'><div class='col-sm-6'><div class='card'><img class='card-img-top' src='" + image + "' alt='Card image cap'><div class='card-body'><h5 class='card-title'>" + serial.seriesName + "</h5><p class='card-text'>" + serial.overview.substring(0,50) + '...' + "</p><a href='/"+ serial.id + "' class='btn btn-primary'>Go somewhere</a></div></div></div></div>" ;
-                        $("#results").append(stringToAppend);
+                        $(".home-content").append(stringToAppend);
                         stringToAppend = "";
                     }
                     else{
