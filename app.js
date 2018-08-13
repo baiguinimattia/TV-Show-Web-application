@@ -207,8 +207,9 @@ app.post("/:id" , isLoggedIn , function( req , res){
                                 var search = checkLists(foundUser[0] , originalId);
                                 console.log(search);
                                 if(addList == "true"){
-                                    if(search.addList){
+                                    if(search.addList && search.positionInList != -1){
                                         foundUser[0].myList.splice(search.positionInList, 1);
+                                        updateUser(foundUser[0]);
                                         console.log("element gasit + apasat = stergere");
                                         console.log("decrementam numarul de liste");
                                         data[0].numberOfLists -= 1;
@@ -217,6 +218,7 @@ app.post("/:id" , isLoggedIn , function( req , res){
                                     else{
                                         var serial = { idSerial : originalId};
                                         foundUser[0].myList.push(serial);
+                                        updateUser(foundUser[0]);
                                         console.log("am adaugat serialul curent in lista user'ului");
                                         console.log("incrementam numarul de liste al serialului curent");
                                         data[0].numberOfLists += 1;
@@ -224,7 +226,7 @@ app.post("/:id" , isLoggedIn , function( req , res){
                                     }
                                 }
                                 if(addLike == "true"){
-                                        if(search.addLike){
+                                        if(search.addLike && search.positionInLike != -1){
                                             foundUser[0].likes.splice(search.positionInLike, 1);
                                             console.log("element gasit + apasat = stergere");
                                             updateUser(foundUser[0]);
