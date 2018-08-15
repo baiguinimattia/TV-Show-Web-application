@@ -8,4 +8,12 @@
 
 h2{
     padding-bottom: 10px;
+    color: #fff;
+}
+.row{
+    padding-top: 20px;
+    height: 100%;
+}
+.card{
+    height: 100%;
 }

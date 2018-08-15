@@ -95,6 +95,7 @@ app.get("/search/:text" , function(req , res){
     var text = req.params.text;
     tvdb.getSeriesByName(text)
                 .then(response => { 
+                    console.log(response[0]);
                     res.send(response);
                     
                 })
@@ -109,6 +110,7 @@ app.get("/search/id/:text" , function( req , res){
     var text = req.params.text;
     tvdb.getSeriesById(text)
     .then(response => { 
+        console.log(response);
         res.send(response);        
 
     })
@@ -166,8 +168,8 @@ app.get("/:id" , isLoggedIn , function( req , res){
                                             ifList = true;
                                         }
                                     })
-                                    console.log("se transmit datele");
-                                    console.log("image " + image + " likes " + likes + " ifLike " + ifLike + " ifList " + ifList);
+                                    // console.log("se transmit datele");
+                                    // console.log("image " + image + " likes " + likes + " ifLike " + ifLike + " ifList " + ifList);
                                     res.render("show" , { serial : response , image : image , likes : likes , ifLike : ifLike , ifList : ifList}); 
 
                                 })
@@ -193,7 +195,6 @@ app.get("/:id" , isLoggedIn , function( req , res){
 app.post("/:id" , isLoggedIn , function( req , res){
     var originalId = req.params.id;
     var addList = req.body.addList;
-    console.log(typeof addList);
     var addLike = req.body.addLike;
     Show.find({originalId : originalId } , function(error , data){
         if( error){
@@ -300,7 +301,6 @@ function getLikes(id , callback){
         }
         else{
             if(foundShow.length > 0){
-                console.log(foundShow[0]);
                 callback(foundShow[0].numberOfLikes);
             }
             else{
@@ -342,7 +342,6 @@ function updateShow(show){
     });
 }
 
-
 function checkLists(user , originalId , callback){
     var addList = false;
     var positionInList = -1;
@@ -362,8 +361,8 @@ function checkLists(user , originalId , callback){
     }
     var object = { addList : addList , positionInList : positionInList , addLike : addLike , positionInLike : positionInLike };
     callback(object);
-    
 }    
+
 function isLoggedIn( req , res , next){
     // console.log(req);
     if( req.isAuthenticated()){

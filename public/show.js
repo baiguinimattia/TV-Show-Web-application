@@ -26,10 +26,15 @@ $(".toggle.addLike").click(function(){
     if($(this).hasClass("active")){
         $(this).removeClass("active");
         $(this).text("Like");
+        console.log($(".value").text());
+        var number = parseInt($(".value").text());
+        $(".value").text(number-1);
     }
     else{
         $(this).addClass("active");
         $(this).text("Liked");
+        var number = parseInt($(".value").text());
+        $(".value").text(number+1);
     }
 })
 $(".toggle.addList").click(function(){
