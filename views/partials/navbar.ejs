@@ -1,35 +1,41 @@
-<div class="ui menu large stackable borderless inverted">
+<nav class="navbar navbar-dark navbar-expand-md bg-dark justify-content-between sticky-top">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-nav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse dual-nav w-50 order-1 order-md-0">
+                <ul class="navbar-nav">
+                    <li class="nav-item ">
+                        <a class="nav-link pl-0" href="/main">HOME</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/mylist">MY LIST</a>
+                    </li>
+                </ul>
+            </div>
+            <a href="/main" class="navbar-brand mx-auto d-block text-center order-0 order-md-1 w-25">BRAND</a>
+            <div class="navbar-collapse collapse dual-nav w-50 order-2">
+                <ul class="nav navbar-nav ml-auto">
+                        
+                        <div class="ui search">
+                                        <div class="ui icon input">
+                                          <input class="prompt" type="text" placeholder="TV Shows...">
+                                          <i class="search icon"></i>
+                                        </div>
+                                        <div class="results hidden" style="display : none"></div>
+                        </div>
 
-    <a href="/main" class="item">Home</a>
-
-    <a href="/mylist" class="item">My List</a>
-    <div class="right menu">
-
-        <!-- <div class="ui search">
-                            <div class="ui icon input">
-                              <input class="prompt" type="text" placeholder="TV Shows...">
-                              <i class="search icon"></i>
-                            </div>
-                            <div class="results"></div>
-        </div> -->
-
-          <a href="/search" class="item">Search</a>
-          <%if(!currentUser){%>
-            <a href="/login" id="loginButton" class="item">Login</a>
-            <a href="/register" id="registerButton" class="item">Register</a>
-          <%} else {%>  
-            <a class="item"><strong><%=" " + currentUser.username.toUpperCase()%></strong></a>
-            <a href="/logout" id="logoutButton" class="item">Logout</a>
-          <%}%>
-            <!-- <button class="compact ui button inverted black link" href="/login">Login</button>
-            <button class="compact ui button inverted black link" href="/register">SignUp</button>
-            <button class="compact ui button inverted black link" href="/logout">Logout</button> -->
-        <!-- <a class=" red item" href="/login">Login</a>
-        <a class=" red item" href="/register">SignUp</a>
-        <a class=" red item" href="/logout">Logout</a> -->
-    </div>
-
-  </div>  
+                        <%if(!currentUser){%>
+                            <li class="nav-item"><a class="nav-link" href="/login">LOGIN</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/register">REGISTER</a></li>
+                        <%} else {%> 
+                            <a class="item"><i class="fas fa-user"></i><strong id="username"><%=" " + currentUser.username.toUpperCase()%></strong></a>
+                            <li class="nav-item"><a class="nav-link" href="/logout">LOGOUT</a></li>
+                        <%}%>
+                </ul>
+            </div>
+        </div>
+</nav>
 
     <div class="container">
         <%if(error && error.length > 0){%>

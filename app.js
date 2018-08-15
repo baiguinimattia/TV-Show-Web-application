@@ -87,15 +87,14 @@ app.get("/logout" , isLoggedIn , function(req , res){
     res.redirect("/main");
 })
 
-app.get("/search" , isLoggedIn ,  function( req , res){
-        res.render("search");
-});
+// app.get("/search" , isLoggedIn ,  function( req , res){
+//         res.render("navbartest");
+// });
 
 app.get("/search/:text" , function(req , res){
     var text = req.params.text;
     tvdb.getSeriesByName(text)
                 .then(response => { 
-                    console.log(response[0]);
                     res.send(response);
                     
                 })
@@ -110,9 +109,7 @@ app.get("/search/id/:text" , function( req , res){
     var text = req.params.text;
     tvdb.getSeriesById(text)
     .then(response => { 
-        console.log(response);
         res.send(response);        
-
     })
     .catch(error => {                     
         console.log(res.body);
@@ -130,7 +127,6 @@ app.get("/mylist" , isLoggedIn , function ( req , res) {
         }
         else{
             if(foundUser.length > 0){
-                console.log(foundUser[0].myList)
                 foundUser[0].myList.forEach(function(element){
                     list.push(element.idSerial);
                     console.log(element.idSerial);
@@ -140,6 +136,18 @@ app.get("/mylist" , isLoggedIn , function ( req , res) {
         }
     })
 
+});
+
+//getEpisodeBySeriesId
+app.get("/getEpisodes/:id" , function(req , res){
+    var id = req.params.id;
+    tvdb.getEpisodesBySeriesId(id)
+        .then(response => {
+            res.send(response);
+        })
+        .catch(error => {
+            console.log(error);
+        });
 });
 
 app.get("/:id" , isLoggedIn , function( req , res){

@@ -1,17 +1,74 @@
 <% include partials/header%>
 <% include partials/navbar%>
 
-<div class="container image">
-        <img src="https://www.thetvdb.com/banners/<%=image.fileName%>" alt="">
+
+<div class="series_header large">
+        <img class="img-responsive full-width-image" src="https://www.thetvdb.com/banners/<%=image.fileName%>">
+        <h1 class="title"><%=serial.seriesName%></h1>
 </div>
-<div class="container">
-        <h1><%=serial.seriesName%></h1>
-        <button class="ui toggle button addList">Add to my list</button>
-        <button class="ui toggle button addLike">Like</button>
-        <div class="ui statistic">
-                <div class="value"><%=likes%></div>
-                <div class="label">Likes</div>
+
+<div class="row">
+        <div class="col-xs-12 col-sm-8">
+                <p><%=serial.overview%></p>
+                <div class="block" id="series_basic_info">
+                                <ul class="list-group">
+                                    <li class="list-group-item clearfix">
+                                        <strong>TheTVDB.com Series ID</strong>
+                                        <span><%=serial.id%></span>
+                                    </li>
+                                    <li class="list-group-item clearfix">
+                                        <strong>Status</strong>
+                                        <span><%=serial.status%></span>
+                                    </li>
+                                    <li class="list-group-item clearfix">
+                                        <strong>First Aired</strong>
+                                        <span><%=serial.firstAired%></span>
+                                    </li>
+                                    <li class="list-group-item clearfix">
+                                        <strong>Network</strong>
+                                        <span><%=serial.network%></span>
+                                    </li>
+                                    <li class="list-group-item clearfix">
+                                        <strong>Runtime</strong>
+                                        <span><%=serial.runtime%></span>
+                                    </li>
+                                    <li class="list-group-item clearfix">
+                                        <strong>Genres</strong>
+                                        <span><%=serial.genre%></span>
+                                    </li>
+                                    <li class="list-group-item clearfix">
+                                        <strong>Airs day of week</strong>
+                                        <span><%=serial.airsDayOfWeek%></span>
+                                    </li>
+                                    <li class="list-group-item clearfix">
+                                                <strong>Airs time</strong>
+                                                <span><%=serial.airsTime%></span>
+                                            </li>
+                                    <li class="list-group-item clearfix">
+                                        <strong>Rating</strong>
+                                        <span><%=serial.rating%></span>
+                                    </li>
+                                    <li class="list-group-item clearfix">
+                                        <strong>IMDB</strong>
+                                        <span><a href="http://www.imdb.com/title/<%=serial.imdbId%>" target="_blank">tt4016454</a></span>
+                                    </li>
+                                </ul>
+                </div>
         </div>
+        <div class="col-xs-12 col-sm-4">
+                        <button class="ui toggle button addList">Add to my list</button>
+                        <button class="ui toggle button addLike">Like</button>
+                        <div class="ui statistic">
+                                <div class="value"><%=likes%></div>
+                                <div class="label">Likes</div>
+                        </div>
+                        <button class="btn btn-danger user"><a href="/getEpisodes/<%=serial.id%>"></a>Get episodes</button>
+        </div>
+</div>
+
+
+<div class="container">
+
 </div>
 
 <div class="hidden serial"><%=serial.id%></div>

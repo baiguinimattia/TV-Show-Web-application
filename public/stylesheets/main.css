@@ -15,4 +15,12 @@ a.button{
     white-space: nowrap;
 }
 
+a.item{
+    padding-top: 7px;
+    margin-left: 10px;
+}
+a:not([href]):not([tabindex]){
+    color: white;
+}
+
 

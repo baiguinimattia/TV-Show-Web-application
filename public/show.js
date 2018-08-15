@@ -22,7 +22,6 @@ if($(".hidden.like").text() == "true"){
 }
 
 $(".toggle.addLike").click(function(){
-    var likes = $(".hidden.numberOfLikes").text();
     if($(this).hasClass("active")){
         $(this).removeClass("active");
         $(this).text("Like");
@@ -47,3 +46,20 @@ $(".toggle.addList").click(function(){
         $(this).text("Added to my list");
     }
 })
+
+//getEpisodes
+$(".user").click(function(){
+    var url = "/getEpisodes/" + serial;
+    $.get(url)
+    .done(function(episodes){
+        console.log("number of seasons" + episodes[episodes.length - 1].airedSeason);
+        if ( episodes !== null && typeof episodes === "object"){
+            
+            episodes.forEach(function(episode){
+                // console.log(episode);
+            });
+            
+        }
+    });
+})
+
