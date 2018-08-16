@@ -47,19 +47,51 @@ $(".toggle.addList").click(function(){
     }
 })
 
-//getEpisodes
-$(".user").click(function(){
-    var url = "/getEpisodes/" + serial;
-    $.get(url)
-    .done(function(episodes){
-        console.log("number of seasons" + episodes[episodes.length - 1].airedSeason);
-        if ( episodes !== null && typeof episodes === "object"){
-            
-            episodes.forEach(function(episode){
-                // console.log(episode);
-            });
-            
+let url = "/getSeriesAllById/" + serial;
+$.get(url)
+.done(function(data){
+        // console.log("number of seasons" + episodes[episodes.length - 1].airedSeason);
+        if ( data !== null && typeof data === "object"){
+            console.log(data);
+            let numberOfSeasons = getNumberOfSeasons(data.episodes);
+            let arrayEpisodes = getArrayEpisodes(data.episodes , numberOfSeasons);
+            console.log(arrayEpisodes);
+            appendSeasons(arrayEpisodes);
         }
+});
+
+
+function appendSeasons(data){
+    let stringToAppend = "";
+    if(data[0] != 0){
+        stringToAppend += "<li class='list-group-item'><span class='badge'>" + data[0] + "</span><h4 class='list-group-item-heading'><a href='/main'>Specials</a></li>";
+    }
+    for(let i = 1 ; i < data.length ; i++){
+        if(data[0] != 0){
+            stringToAppend += "<li class='list-group-item'><span class='badge'>" + data[i] + "</span><h4 class='list-group-item-heading'><a href='/main'>Season " + i + "</a></li>";
+        }
+    }
+    $(".list-group.list-group-condensed").append(stringToAppend);
+}
+
+function getNumberOfSeasons(data){
+    let max = 0;
+    data.forEach(function(episode){
+            if(episode.airedSeason > max){
+                max = episode.airedSeason;
+            }
     });
-})
+    return max;
+}
+
+function getArrayEpisodes(data , numberOfSeasons){
+    let i=0;
+    let arrayEpisodes = new Array(numberOfSeasons + 1);
+    arrayEpisodes.fill( 0 , 0 );
+    while( i < data.length){
+        arrayEpisodes[data[i].airedSeason] += 1;
+        i++;
+    }
+    return arrayEpisodes;
+}
 

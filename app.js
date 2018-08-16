@@ -139,9 +139,9 @@ app.get("/mylist" , isLoggedIn , function ( req , res) {
 });
 
 //getEpisodeBySeriesId
-app.get("/getEpisodes/:id" , function(req , res){
+app.get("/getSeriesAllById/:id" , function(req , res){
     var id = req.params.id;
-    tvdb.getEpisodesBySeriesId(id)
+    tvdb.getSeriesAllById(id)
         .then(response => {
             res.send(response);
         })

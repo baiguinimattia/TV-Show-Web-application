@@ -23,4 +23,13 @@ a:not([href]):not([tabindex]){
     color: white;
 }
 
+.alert{
+   margin-top: 20px;
+   padding-top: 10px;
+}
+
+.alert p{
+    text-align: center;
+}
+
 
