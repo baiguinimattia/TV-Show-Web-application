@@ -138,6 +138,24 @@ app.get("/mylist" , isLoggedIn , function ( req , res) {
 
 });
 
+app.post("/season/:id" , function(req , res){
+    let id = req.params.id;
+    let arrayEpisodes = req.body.arrayEpisodes;
+    res.send(appendDropdown(arrayEpisodes[id]));
+});
+
+function appendDropdown(numberOfEpisodes){
+    let stringToAppend = "";
+    if(numberOfEpisodes > 0 ){
+        stringToAppend += "<div class='dropdown'><button class='btn btn-secondary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>Seasons</button><div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>";
+        for( let i = 1 ; i <= numberOfEpisodes; i++){
+                    stringToAppend += "<a class='dropdown-item' href='/episode/" + i + "'>" + "Episode " + i + "</a>";
+        }
+        stringToAppend += "</div></div>";
+    }
+    return stringToAppend;
+}
+
 //getEpisodeBySeriesId
 app.get("/getSeriesAllById/:id" , function(req , res){
     var id = req.params.id;
