@@ -67,7 +67,7 @@ function appendSeasons(data){
         stringToAppend += "<li class='list-group-item'><span class='badge'>" + data[0] + "</span><h4 class='list-group-item-heading'><a href='/main'>Specials</a></li>";
     }
     for(let i = 1 ; i < data.length ; i++){
-        if(data[0] != 0){
+        if(data[i] != 0){
             stringToAppend += "<li class='list-group-item'><span class='badge'>" + data[i] + "</span><h4 class='list-group-item-heading'><a href='/main'>Season " + i + "</a></li>";
         }
     }
