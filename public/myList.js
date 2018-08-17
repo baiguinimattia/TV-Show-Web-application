@@ -5,10 +5,18 @@ var serials = JSON.parse(objects);
 var data = serials.split(",");
 var arrayEpisodes;
 
-loadList(data);
+loadList(data , function(){
+    $(".dropdown-item").click(function(){
+        console.log($(this).attr("data-season-id"));
+        let url ="/season/" + $(this).attr("data-season-id");
+        $.post(url , { arrayEpisodes : arrayEpisodes } , function( data ){
+            console.log(data);
+        })
+    });
+});
 
 
-function loadList(objects){
+function loadList(objects , callback){
     var number = 1;
     var stringToAppend = "";
     objects.forEach(function(element){
@@ -49,16 +57,9 @@ function loadList(objects){
 
         });
     });
+    callback();
 
 }
-
-$(".dropdown-item").click(function(){
-    console.log($(this).attr("data-season-id"));
-    let url ="/season/" + $(this).attr("data-season-id");
-    $.post(url , { arrayEpisodes : arrayEpisodes } , function( data ){
-        console.log(data);
-    })
-});
 
 function appendDropdowns(data){
     if ( data !== null && typeof data === "object"){
