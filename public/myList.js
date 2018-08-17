@@ -6,13 +6,15 @@ var data = serials.split(",");
 var arrayEpisodes;
 
 loadList(data , function(){
-    $(".dropdown-item").click(function(){
-        console.log($(this).attr("data-season-id"));
-        let url ="/season/" + $(this).attr("data-season-id");
-        $.post(url , { arrayEpisodes : arrayEpisodes } , function( data ){
-            console.log(data);
-        })
-    });
+        console.log($(".dropdown-item").val());
+        $(".dropdown-item").click(function(){
+            console.log($(this).attr("data-season-id"));
+            let url ="/season/" + $(this).attr("data-season-id");
+            $.post(url , { arrayEpisodes : arrayEpisodes } , function( data ){
+                console.log(data);
+            })
+        });
+
 });
 
 
