@@ -3,16 +3,29 @@ var info = $(".hidden").text();
 var objects = JSON.stringify(info);
 var serials = JSON.parse(objects);
 var data = serials.split(",");
-var arrayEpisodes;
+var listOfEpisodeArrays = new Array({ id : String , array : Array});
 
 loadList(data , function(){
-        console.log($(".dropdown-item").val());
-        $(".dropdown-item").click(function(){
-            console.log($(this).attr("data-season-id"));
+        // console.log($(".dropdown-item").val());
+        $(".dropdown-item.season").click(function(){
+            let sibling = $(this).parent().parent().siblings(".dropdown").children(".dropdown-menu");
             let url ="/season/" + $(this).attr("data-season-id");
-            $.post(url , { arrayEpisodes : arrayEpisodes } , function( data ){
-                console.log(data);
-            })
+            let id = $(this).closest(".card-body").children("a").attr("href").substring(1);
+            let arrayEpisodes;
+            for(let i=0; i < listOfEpisodeArrays.length ; i++){
+                console.log(typeof listOfEpisodeArrays[i].id);
+                if(listOfEpisodeArrays[i].id == id){
+                    arrayEpisodes = listOfEpisodeArrays[i].array;
+                    console.log(arrayEpisodes);
+                    $.post(url , { arrayEpisodes : arrayEpisodes } , function( data ){
+                        console.log(data);
+                        // console.log($(this).parent());
+                        sibling.append(data);
+        
+                    })
+                }
+            }
+
         });
 
 });
@@ -23,7 +36,6 @@ function loadList(objects , callback){
     var stringToAppend = "";
     objects.forEach(function(element){
         var url = "/getSeriesAllById/" + element;
-        console.log(url);
         $.get(url)
         .done(function(serial){
             if(serial.overview != "" && serial.overview != null){
@@ -36,15 +48,24 @@ function loadList(objects , callback){
                 }
                     if ( number%2 == 1 && number == objects.length ){
                         stringToAppend += "<div class='row'><div class='col-sm-6'><div class='card'><img class='card-img-top' src='" + image + "' alt='Card image cap'><div class='card-body'><h5 class='card-title'><a href=/'" + serial.id + "'>" + serial.seriesName + "</a></h5><p class='card-text'>" + serial.overview.substring(0,200) + '...' + "</p><a href='/"+ serial.id + "' class='btn btn-primary'>Find out more</a><div class='ui right floated tiny horizontal statistic'><div class='value'>" + serial.siteRating + "</div><div class='label'><a href='https://www.imdb.com/title/" + serial.imdbId + "'>IMDB</a> Rating</div>" + appendDropdowns(serial) + "</div></div></div></div></div>" ;
-                        $(".home-content").append(stringToAppend);
+                        needCallback(stringToAppend , function(){
+                            callback();
+                        })
                         stringToAppend = "";
                     }
                     else{
                         if ( number%2 != 1 ){
                             stringToAppend += "<div class='col-sm-6'><div class='card'><img class='card-img-top' src='" + image + "' alt='Card image cap'><div class='card-body'><h5 class='card-title'><a href=/'" + serial.id + "'>" + serial.seriesName + "</a></h5><p class='card-text'>" + serial.overview.substring(0,200) + '...' + "</p><a href='/"+ serial.id +"' class='btn btn-primary'>Find out more</a><div class='ui right floated tiny horizontal statistic'><div class='value'>" + serial.siteRating + "</div><div class='label'><a href='https://www.imdb.com/title/" + serial.imdbId + "'>IMDB</a> Rating</div>" + appendDropdowns(serial) + "</div></div></div></div>"
                             stringToAppend += "</div>"
+                            if(number == objects.length){
+                                needCallback(stringToAppend , function(){
+                                    callback();
+                                })
+                            }
+                            else{
+                                $(".home-content").append(stringToAppend);
+                            }
 
-                            $(".home-content").append(stringToAppend);
                             stringToAppend = "";
                         }
                         else{
@@ -59,31 +80,36 @@ function loadList(objects , callback){
 
         });
     });
-    callback();
 
 }
+
+function needCallback(string, callback){
+    $(".home-content").append(string);
+    callback();
+};
 
 function appendDropdowns(data){
     if ( data !== null && typeof data === "object"){
         let stringToAppend = "";
         let numberOfSeasons = getNumberOfSeasons(data.episodes);
-        arrayEpisodes = getArrayEpisodes(data.episodes , numberOfSeasons);
+        let arrayEpisodes = getArrayEpisodes(data.episodes , numberOfSeasons);
+        listOfEpisodeArrays.push({ id : data.id , array : arrayEpisodes});
         if(arrayEpisodes.length > 0 ){
             stringToAppend += "<div class='dropdown'><button class='btn btn-secondary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>Seasons</button><div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>";
             for( let i = 0 ; i < arrayEpisodes.length ; i++){
                 if(arrayEpisodes[i] > 0){
                     if(i == 0){
-                        stringToAppend += "<a class='dropdown-item' href='#' data-season-id='" + i + "'>" + "Special season" + "</a>";
+                        stringToAppend += "<a class='dropdown-item season' href='#' data-season-id='" + i + "'>" + "Special season" + "</a>";
                     }
                     else{
-                        stringToAppend += "<a class='dropdown-item' href='#' data-season-id='" + i + "'>" + "Season " + i + "</a>";
+                        stringToAppend += "<a class='dropdown-item season' href='#' data-season-id='" + i + "'>" + "Season " + i + "</a>";
                     }
                 }
             }
             stringToAppend += "</div></div>";
         }
         stringToAppend += "<div class='dropdown'><button class='btn btn-secondary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>Episodes</button><div class='dropdown-menu episodes' aria-labelledby='dropdownMenuButton'></div></div>"
-        return stringToAppend;
+        return stringToAppend ;
     }
 }
 
