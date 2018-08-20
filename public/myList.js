@@ -20,6 +20,7 @@ loadList(data , function(){
                     $.post(url , { arrayEpisodes : arrayEpisodes } , function( data ){
                         console.log(data);
                         // console.log($(this).parent());
+                        sibling.text("");
                         sibling.append(data);
         
                     })
@@ -47,7 +48,7 @@ function loadList(objects , callback){
                     var image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnYYwEvCRhV5HQ0Be6g74VLIy6fEwLG7NscqPijOmQuQzKxpcN";
                 }
                     if ( number%2 == 1 && number == objects.length ){
-                        stringToAppend += "<div class='row'><div class='col-sm-6'><div class='card'><img class='card-img-top' src='" + image + "' alt='Card image cap'><div class='card-body'><h5 class='card-title'><a href=/'" + serial.id + "'>" + serial.seriesName + "</a></h5><p class='card-text'>" + serial.overview.substring(0,200) + '...' + "</p><a href='/"+ serial.id + "' class='btn btn-primary'>Find out more</a><div class='ui right floated tiny horizontal statistic'><div class='value'>" + serial.siteRating + "</div><div class='label'><a href='https://www.imdb.com/title/" + serial.imdbId + "'>IMDB</a> Rating</div>" + appendDropdowns(serial) + "</div></div></div></div></div>" ;
+                        stringToAppend += "<div class='row'><div class='col-sm-6'><div class='card'><img class='card-img-top' src='" + image + "' alt='Card image cap'><div class='card-body'><h5 class='card-title'><a href=/'" + serial.id + "'>" + serial.seriesName + "</a></h5><p class='card-text'>" + serial.overview.substring(0,50) + '...' + "</p><a href='/"+ serial.id + "' class='btn btn-primary'>Find out more</a><div class='ui right floated tiny horizontal statistic'><div class='value'>" + serial.siteRating + "</div><div class='label'><a href='https://www.imdb.com/title/" + serial.imdbId + "'>IMDB</a> Rating</div>" + appendDropdowns(serial) + "</div></div></div></div></div>" ;
                         needCallback(stringToAppend , function(){
                             callback();
                         })
@@ -55,7 +56,7 @@ function loadList(objects , callback){
                     }
                     else{
                         if ( number%2 != 1 ){
-                            stringToAppend += "<div class='col-sm-6'><div class='card'><img class='card-img-top' src='" + image + "' alt='Card image cap'><div class='card-body'><h5 class='card-title'><a href=/'" + serial.id + "'>" + serial.seriesName + "</a></h5><p class='card-text'>" + serial.overview.substring(0,200) + '...' + "</p><a href='/"+ serial.id +"' class='btn btn-primary'>Find out more</a><div class='ui right floated tiny horizontal statistic'><div class='value'>" + serial.siteRating + "</div><div class='label'><a href='https://www.imdb.com/title/" + serial.imdbId + "'>IMDB</a> Rating</div>" + appendDropdowns(serial) + "</div></div></div></div>"
+                            stringToAppend += "<div class='col-sm-6'><div class='card'><img class='card-img-top' src='" + image + "' alt='Card image cap'><div class='card-body'><h5 class='card-title'><a href=/'" + serial.id + "'>" + serial.seriesName + "</a></h5><p class='card-text'>" + serial.overview.substring(0,50) + '...' + "</p><a href='/"+ serial.id +"' class='btn btn-primary'>Find out more</a><div class='ui right floated tiny horizontal statistic'><div class='value'>" + serial.siteRating + "</div><div class='label'><a href='https://www.imdb.com/title/" + serial.imdbId + "'>IMDB</a> Rating</div>" + appendDropdowns(serial) + "</div></div></div></div>"
                             stringToAppend += "</div>"
                             if(number == objects.length){
                                 needCallback(stringToAppend , function(){
@@ -70,7 +71,7 @@ function loadList(objects , callback){
                         }
                         else{
                             if( number != 0 && number%2 == 1 ){
-                                stringToAppend += "<div class='row'><div class='col-sm-6'><div class='card'><img class='card-img-top' src='" + image + "' alt='Card image cap'><div class='card-body'><h5 class='card-title'><a href=/'" + serial.id + "'>" + serial.seriesName + "</a></h5><p class='card-text'>" + serial.overview.substring(0,200) + '...' + "</p><a href='/"+ serial.id + "' class='btn btn-primary'>Find out more</a><div class='ui right floated tiny horizontal statistic'><div class='value'>" + serial.siteRating + "</div><div class='label'><a href='https://www.imdb.com/title/" + serial.imdbId + "'>IMDB</a> Rating</div>" + appendDropdowns(serial) + "</div></div></div></div>"
+                                stringToAppend += "<div class='row'><div class='col-sm-6'><div class='card'><img class='card-img-top' src='" + image + "' alt='Card image cap'><div class='card-body'><h5 class='card-title'><a href=/'" + serial.id + "'>" + serial.seriesName + "</a></h5><p class='card-text'>" + serial.overview.substring(0,50) + '...' + "</p><a href='/"+ serial.id + "' class='btn btn-primary'>Find out more</a><div class='ui right floated tiny horizontal statistic'><div class='value'>" + serial.siteRating + "</div><div class='label'><a href='https://www.imdb.com/title/" + serial.imdbId + "'>IMDB</a> Rating</div>" + appendDropdowns(serial) + "</div></div></div></div>"
 
                             }                                
                         }
@@ -93,9 +94,9 @@ function appendDropdowns(data){
         let stringToAppend = "";
         let numberOfSeasons = getNumberOfSeasons(data.episodes);
         let arrayEpisodes = getArrayEpisodes(data.episodes , numberOfSeasons);
-        listOfEpisodeArrays.push({ id : data.id , array : arrayEpisodes});
+        listOfEpisodeArrays.push({ id : data.id  , array : arrayEpisodes});
         if(arrayEpisodes.length > 0 ){
-            stringToAppend += "<div class='dropdown'><button class='btn btn-secondary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>Seasons</button><div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>";
+            stringToAppend += "<div class='dropdown'><button class='btn btn-secondary btn-sm dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>Seasons</button><div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>";
             for( let i = 0 ; i < arrayEpisodes.length ; i++){
                 if(arrayEpisodes[i] > 0){
                     if(i == 0){
@@ -108,7 +109,7 @@ function appendDropdowns(data){
             }
             stringToAppend += "</div></div>";
         }
-        stringToAppend += "<div class='dropdown'><button class='btn btn-secondary dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>Episodes</button><div class='dropdown-menu episodes' aria-labelledby='dropdownMenuButton'></div></div>"
+        stringToAppend += "<div class='dropdown'><button class='btn btn-secondary btn-sm dropright dropdown-toggle' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>Episodes</button><div class='dropdown-menu episodes' aria-labelledby='dropdownMenuButton'></div></div>"
         return stringToAppend ;
     }
 }

@@ -8,7 +8,9 @@ var UserSchema  = new mongoose.Schema({
         idSerial : String
     }],
     myList : [{
-        idSerial : String
+        idSerial : String,
+        currentSeason : { type: Number, default: -1 },
+        currentEpisode : { type: Number, default: -1 }
     }]
 
     // shows : [{

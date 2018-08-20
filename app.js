@@ -216,6 +216,7 @@ app.get("/:id" , isLoggedIn , function( req , res){
     });
 });
 
+
 app.post("/:id" , isLoggedIn , function( req , res){
     var originalId = req.params.id;
     var addList = req.body.addList;
@@ -318,6 +319,18 @@ app.post("/:id" , isLoggedIn , function( req , res){
     })
 });
 
+app.get("/actors/:id" , function(req , res){
+    let id = req.params.id;
+    tvdb.getActors(id)
+    .then(response => {
+        res.send(response);
+    })
+    .catch(error => {
+        console.log(error);
+    });
+
+});
+
 function getLikes(id , callback){
     Show.find({originalId : id} , function(error , foundShow){
         if(error){
@@ -395,6 +408,10 @@ function isLoggedIn( req , res , next){
     req.flash("error" , "You need to be logged in to do that.");
     res.redirect("/login");
 };
+
+app.get("/*" , function(req , res){
+    res.send("Error 404");
+});
 
 app.listen( 3000 , function(){
     console.log("Server Running!");
