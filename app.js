@@ -140,20 +140,44 @@ app.get("/mylist" , isLoggedIn , function ( req , res) {
 app.post("/season/:id" , function(req , res){
     let id = req.params.id;
     let arrayEpisodes = req.body.arrayEpisodes;
+    let idSerial = req.body.idSerial;
     console.log(req.body);
-    res.send(appendDropdown(arrayEpisodes[id]));
+    res.send(appendDropdown(idSerial , id , arrayEpisodes[id]));
 });
 
-function appendDropdown(numberOfEpisodes){
+function appendDropdown( idSerial , season , numberOfEpisodes){
     let stringToAppend = "";
     if(numberOfEpisodes > 0 ){
         for( let i = 1 ; i <= numberOfEpisodes; i++){
-                    stringToAppend += "<a class='dropdown-item' href='/episode/" + i + "'>" + "Episode " + i + "</a>";
+                    stringToAppend += "<a class='dropdown-item'  href='/idSerial/" + idSerial + "/season/" + season + "/episode/" + i + "'>" + "Episode " + i + "</a>";
         }
     }
     return stringToAppend;
 }
 
+app.get("/idSerial/:id/season/:season/episode/:episode" , function(req , res){
+    User.find({ _id : req.user._id } , function(error , foundUser){
+        if(error){
+            console.log(error);
+        }
+        else{
+            if(foundUser.length > 0){
+                foundUser[0].myList.forEach(function(serial){
+                    if(serial.idSerial === req.params.id){
+                        serial.currentSeason = req.params.season;
+                        serial.currentEpisode = req.params.episode;
+                        updateUser(foundUser[0]);
+                        req.flash("success" , "The data has been succesfully updated.");
+                        res.redirect("/myList");
+                    }
+                })
+
+
+            }
+        }
+
+    });
+});
 //getEpisodeBySeriesId
 app.get("/getSeriesAllById/:id" , function(req , res){
     var id = req.params.id;
@@ -165,6 +189,97 @@ app.get("/getSeriesAllById/:id" , function(req , res){
             console.log(error);
         });
 });
+
+app.get("/actors/:id" , function(req , res){
+    let id = req.params.id;
+    tvdb.getActors(id)
+    .then(response => {
+        res.send(response);
+    })
+    .catch(error => {
+        console.log(error);
+    });
+
+});
+
+function getLikes(id , callback){
+    Show.find({originalId : id} , function(error , foundShow){
+        if(error){
+            console.log(error);
+        }
+        else{
+            if(foundShow.length > 0){
+                callback(foundShow[0].numberOfLikes);
+            }
+            else{
+                callback(0);
+            }
+        }
+    })
+}
+        
+function getImages(id , callback){
+    tvdb.getSeriesImages(id , "fanart")
+                .then(responseImage => { 
+                    callback(responseImage[0]);   
+                })
+                .catch(error => {                     
+                    console.log(error);
+                });
+}
+
+function updateUser(user){
+    User.findByIdAndUpdate( user._id , user , function( error , updatedUser){
+        if ( error){
+                console.log(error);
+        }
+        else{
+                console.log(updatedUser);
+       }
+    });
+}
+
+function updateShow(show){
+    Show.findByIdAndUpdate( show._id , show , function( error , updatedShow){
+        if ( error){
+                console.log(error);
+        }
+        else{
+                console.log("show updated");
+       }
+    });
+}
+
+function checkLists(user , originalId , callback){
+    var addList = false;
+    var positionInList = -1;
+    var addLike = false;
+    var positionInLike = -1;
+    for(var i=0; i < user.myList.length ; i++ ){
+        if(user.myList[i].idSerial == originalId){
+            addList = true;
+            positionInList = i;
+        }
+    }
+    for(var i=0; i < user.likes.length ; i++ ){
+        if(user.likes[i].idSerial == originalId){
+            addLike = true;
+            positionInLike = i;
+        }
+    }
+    var object = { addList : addList , positionInList : positionInList , addLike : addLike , positionInLike : positionInLike };
+    callback(object);
+}    
+
+function isLoggedIn( req , res , next){
+    // console.log(req);
+    if( req.isAuthenticated()){
+        return next();
+    }
+    req.flash("error" , "You need to be logged in to do that.");
+    res.redirect("/login");
+};
+
 
 app.get("/:id" , isLoggedIn , function( req , res){
     var id = req.params.id;
@@ -319,95 +434,6 @@ app.post("/:id" , isLoggedIn , function( req , res){
     })
 });
 
-app.get("/actors/:id" , function(req , res){
-    let id = req.params.id;
-    tvdb.getActors(id)
-    .then(response => {
-        res.send(response);
-    })
-    .catch(error => {
-        console.log(error);
-    });
-
-});
-
-function getLikes(id , callback){
-    Show.find({originalId : id} , function(error , foundShow){
-        if(error){
-            console.log(error);
-        }
-        else{
-            if(foundShow.length > 0){
-                callback(foundShow[0].numberOfLikes);
-            }
-            else{
-                callback(0);
-            }
-        }
-    })
-}
-        
-function getImages(id , callback){
-    tvdb.getSeriesImages(id , "fanart")
-                .then(responseImage => { 
-                    callback(responseImage[0]);   
-                })
-                .catch(error => {                     
-                    console.log(error);
-                });
-}
-
-function updateUser(user){
-    User.findByIdAndUpdate( user._id , user , function( error , updatedUser){
-        if ( error){
-                console.log(error);
-        }
-        else{
-                console.log("user updated");
-       }
-    });
-}
-
-function updateShow(show){
-    Show.findByIdAndUpdate( show._id , show , function( error , updatedShow){
-        if ( error){
-                console.log(error);
-        }
-        else{
-                console.log("show updated");
-       }
-    });
-}
-
-function checkLists(user , originalId , callback){
-    var addList = false;
-    var positionInList = -1;
-    var addLike = false;
-    var positionInLike = -1;
-    for(var i=0; i < user.myList.length ; i++ ){
-        if(user.myList[i].idSerial == originalId){
-            addList = true;
-            positionInList = i;
-        }
-    }
-    for(var i=0; i < user.likes.length ; i++ ){
-        if(user.likes[i].idSerial == originalId){
-            addLike = true;
-            positionInLike = i;
-        }
-    }
-    var object = { addList : addList , positionInList : positionInList , addLike : addLike , positionInLike : positionInLike };
-    callback(object);
-}    
-
-function isLoggedIn( req , res , next){
-    // console.log(req);
-    if( req.isAuthenticated()){
-        return next();
-    }
-    req.flash("error" , "You need to be logged in to do that.");
-    res.redirect("/login");
-};
 
 app.get("/*" , function(req , res){
     res.send("Error 404");

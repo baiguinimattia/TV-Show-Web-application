@@ -99,17 +99,23 @@ function getActors(id){
     let url = "/actors/" + serial;
     $.get(url)
     .done(function(actorsData){
-            // console.log("number of seasons" + episodes[episodes.length - 1].airedSeason);
+            let numberOfActors = 0;
             if ( actorsData !== null && typeof actorsData === "object"){
+                console.log(actorsData);
+
                 let stringToAppend = "";                
                 actorsData.forEach(function(element){
                     if(element.sortOrder == 1 || element.sortOrder == 2 || element.sortOrder == 0){
                         console.log(element);
                         stringToAppend += "<div class='col-xs-6 col-sm-4 col-md-3 actors'><div class='thumbnail'><h3>"+ element.name +"<br><small>as " + element.role + "</small></h3><img class='img-responsive' src='https://www.thetvdb.com/banners/" + element.image + "'></div></div>"
+                        numberOfActors += 1;
                     }
 
                 });
                 $(".row.actors").append(stringToAppend);
+            }
+           if(actorsData.length == 0 || numberOfActors == 0){
+                $("h2.actors").addClass("hidden");
             }
     });
 }

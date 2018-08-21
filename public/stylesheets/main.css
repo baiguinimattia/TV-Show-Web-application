@@ -32,4 +32,8 @@ a:not([href]):not([tabindex]){
     text-align: center;
 }
 
+.jumbotron {
+    margin-top: 25px;
+}
+
 

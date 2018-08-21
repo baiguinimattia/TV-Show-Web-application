@@ -1,15 +1,15 @@
 <% include partials/header%>
 <% include partials/navbar%>
 
-<div class="container">
+<div class="container text">
     <div class="row">
         <div class="col-xs-12">
             <h2>My list</h2>
         </div>
     </div>
 </div>
-
-<div class="container home-content"></div>
+<div class="ui active massive centered text inline loader">Loading</div>
+<div class="container hidden home-content"></div>
 <div class="hidden"><%=myList%></div>
 
 <% include partials/scripts %>

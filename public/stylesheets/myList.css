@@ -28,3 +28,7 @@ h2{
 .dropdown-menu{
     margin-top: 45px;
 }
+
+.loader{
+    color: #fff;
+}

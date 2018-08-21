@@ -74,6 +74,23 @@
                         <div class="value"><%=likes%></div>
                         <div class="label">Likes</div>
                 </div>
+                <div class="ui statistic">
+                    <%if(currentUser.myList.forEach(function(element){%>
+                        <%if(serial.id == element.idSerial && element.currentSeason != -1 && element.currentEpisode != -1){%>
+                            <div class="value"><%=element.currentSeason%></div>
+                            <div class="label">Current season</div>
+                        <%}%>    
+                    <%}))%>
+                </div>
+                <div class="ui statistic">
+                    <%if(currentUser.myList.forEach(function(element){%>
+                        <%if(serial.id == element.idSerial && element.currentSeason != -1 && element.currentEpisode != -1){%>
+                            <div class="value"><%=element.currentEpisode%></div>
+                            <div class="label">Current episode</div>
+                        <%}%>    
+                    <%}))%>
+                </div>
+
         </div>
 </div>
 

@@ -6,7 +6,13 @@ var data = serials.split(",");
 var listOfEpisodeArrays = new Array({ id : String , array : Array});
 
 loadList(data , function(){
-        // console.log($(".dropdown-item").val());
+        // console.log($(".dropdown-item").val());        
+        $(".loader").removeClass("active");
+        $(".loader").addClass("hidden");
+        $(".home-content").removeClass("hidden");
+        // $(".home-content").fadeIn(1000);
+
+
         $(".dropdown-item.season").click(function(){
             let sibling = $(this).parent().parent().siblings(".dropdown").children(".dropdown-menu");
             let url ="/season/" + $(this).attr("data-season-id");
@@ -17,12 +23,12 @@ loadList(data , function(){
                 if(listOfEpisodeArrays[i].id == id){
                     arrayEpisodes = listOfEpisodeArrays[i].array;
                     console.log(arrayEpisodes);
-                    $.post(url , { arrayEpisodes : arrayEpisodes } , function( data ){
+                    $.post(url , { idSerial : id, arrayEpisodes : arrayEpisodes } , function( data ){
                         console.log(data);
                         // console.log($(this).parent());
                         sibling.text("");
                         sibling.append(data);
-        
+                        
                     })
                 }
             }
