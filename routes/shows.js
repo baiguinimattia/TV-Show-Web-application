@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
-
+const request = require("request");
 const Show = require("../models/show"),
     middleware = require("../middleware/index.js");
 
 //api
 const TVDB = require('node-tvdb');
+
 const tvdb = new TVDB('5YFSVMD76MRV5ZB7');
 
 
@@ -33,24 +34,28 @@ router.get("/search/id/:text" , function( req , res){
         });
     
 });
+
+router.get("/user/mylist" , middleware.isLoggedIn , function(req , res){
+    let list = [];
+    User.find( { _id : req.user._id} , function(error , foundUser){
+        if(error){
+            console.log(error);
+        }
+        else{
+            if(foundUser.length > 0){
+                foundUser[0].myList.forEach(function(element){
+                    list.push(element.idSerial);
+                })
+                res.send({ myList : list });
+            }
+        }
+    })
+});
     
 router.get("/mylist" , middleware.isLoggedIn , function ( req , res) {
-        let list = [];
-        User.find( { _id : req.user._id} , function(error , foundUser){
-            if(error){
-                console.log(error);
-            }
-            else{
-                if(foundUser.length > 0){
-                    foundUser[0].myList.forEach(function(element){
-                        list.push(element.idSerial);
-                    })
-                    res.render("mylist" , { myList : list });
-                }
-            }
-        })
-    
+    res.render("mylist");
 });
+
 router.post("/season/:id" , function(req , res){
         let id = req.params.id;
         let arrayEpisodes = req.body.arrayEpisodes;
@@ -106,6 +111,19 @@ router.get("/actors/:id" , function(req , res){
 
 });
  
+router.get("/popular" , function(req , res){
+    let apiKey = "ea292d4cc2f43826307ecabbdcd5e198";
+    let url = "https://api.themoviedb.org/3/tv/popular?api_key=" + apiKey + "&language=en-US&page=1";
+    request(url , function( error , response , body){
+        if(error){
+            console.log(error);
+        }
+        else{
+            console.log("statusCode " + response.statusCode );
+            res.send(body);
+        }
+    })
+});
 
 
 
@@ -251,6 +269,7 @@ router.get("/updated/:time" , function(req , res){
         
     });
 });
+
 
 
 

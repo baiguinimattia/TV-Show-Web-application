@@ -22,6 +22,10 @@ h2{
     padding-top: 20px;
 }
 
+.col-sm-6{
+    margin-bottom: 20px;
+}
+
 .dropdown{
     padding-left: 10px;
 }
